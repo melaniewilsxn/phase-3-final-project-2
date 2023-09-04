@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from datetime import datetime
 
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -15,6 +15,22 @@ class User(Base):
     email = Column(String(), unique=True, nullable=False)
     hashed_password = Column(String(), nullable=False)
     created_at = Column(DateTime(), default=datetime.now())
+
+class Category(Base):
+    __tablename__ = 'categories'
+
+    category_id = Column(Integer(), primary_key=True, autoincrement=True)
+    name = Column(String(), unique=True, nullable=False)
+    user_id = Column(Integer(), ForeignKey('users.user_id'))
+
+class Expense(Base):
+    __tablename__ = 'expenses'
+
+    expense_id = Column(Integer(), primary_key=True, autoincrement=True)
+    amount = Column(Integer(), nullable=False)
+    description = Column(String(), nullable=False)
+    category_id = Column(Integer(), ForeignKey('categories.category_id'))
+    user_id = Column(Integer(), ForeignKey('users.user_id'))
 
 if __name__ == '__main__':
     engine = create_engine('sqlite:///expense_tracker.db')
