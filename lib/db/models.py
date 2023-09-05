@@ -3,7 +3,7 @@ from datetime import datetime
 
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, relationship, backref
 
 Base = declarative_base()
 
@@ -16,12 +16,17 @@ class User(Base):
     hashed_password = Column(String(), nullable=False)
     created_at = Column(DateTime(), default=datetime.now())
 
+    categories = relationship('Category', backref=backref('user'))
+    expenses = relationship('Expense', backref=backref('user'))
+
 class Category(Base):
     __tablename__ = 'categories'
 
     category_id = Column(Integer(), primary_key=True, autoincrement=True)
     name = Column(String(), unique=True, nullable=False)
     user_id = Column(Integer(), ForeignKey('users.user_id'))
+
+    expenses = relationship('Expense', backref=backref('category'))
 
 class Expense(Base):
     __tablename__ = 'expenses'
